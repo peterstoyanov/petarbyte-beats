@@ -17,9 +17,11 @@ expo-env.d.ts
 *.p12
 *.key
 *.mobileprovision
+*.keystore
 
 # Metro
 .metro-health-check*
+.vscode/.react
 
 # debug
 npm-debug.*
@@ -30,12 +32,55 @@ yarn-error.*
 .DS_Store
 *.pem
 
-# local env files
-.env*.local
+# generated native folders
+/ios
+/android
 
 # typescript
 *.tsbuildinfo
 
-# generated native folders
-/ios
-/android
+# ---- Secrets & environment variables: NEVER commit these ----
+.env
+.env.*
+!.env.example
+*.secret
+*.secrets
+secrets.json
+credentials.json
+**/google-services.json
+**/GoogleService-Info.plist
+eas.json.local
+*.key.json
+*.pfx
+*.cer
+
+# Expo / EAS local config that can carry account-specific tokens
+.eas/
+
+# ---- AI assistant / agent files: private, NEVER commit ----
+# Claude / Claude Code
+.claude/
+**/.claude/
+CLAUDE.md
+CLAUDE.local.md
+**/CLAUDE.md
+**/CLAUDE.local.md
+.claude.json
+.claude.json.*
+claude_desktop_config.json
+.mcp.json
+**/.mcp.json
+.claudeignore
+# Other AI coding agents
+AGENTS.md
+**/AGENTS.md
+GEMINI.md
+.gemini/
+.codex/
+.cursor/
+.cursorrules
+.windsurf/
+.windsurfrules
+.aider*
+.continue/
+.github/copilot-instructions.md
