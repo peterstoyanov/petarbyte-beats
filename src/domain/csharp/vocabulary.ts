@@ -102,6 +102,15 @@ export const CHANNEL_SETTINGS = [
 
 export type ChannelSettingEntry = (typeof CHANNEL_SETTINGS)[number];
 
+/** Mute and Solo, written as true or false. */
+export type BooleanChannelSetting = Extract<ChannelSettingEntry, { field: 'isMuted' | 'isSoloed' }>;
+
+/** Every other channel setting, written as a number. */
+export type NumericChannelSetting = Exclude<ChannelSettingEntry, BooleanChannelSetting>;
+
+export const isBooleanSetting = (setting: ChannelSettingEntry): setting is BooleanChannelSetting =>
+  setting.field === 'isMuted' || setting.field === 'isSoloed';
+
 /** The master settings in the code, such as song.Reverb = 0.5, in the order the code lists them. */
 export const MASTER_SETTINGS = [
   { name: 'Volume', field: 'volume' },

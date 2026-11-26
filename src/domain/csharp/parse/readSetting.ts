@@ -1,10 +1,11 @@
 import {
   findChannelSetting,
   findMasterSetting,
+  isBooleanSetting,
   MASTER_SETTINGS,
   settingsOf,
   SONG_VARIABLE,
-  type ChannelSettingEntry,
+  type NumericChannelSetting,
 } from '../vocabulary';
 import { isWithin } from '../../song/limits';
 import { SETTING_RANGES } from '../../song/settingRanges';
@@ -73,7 +74,7 @@ const readChannelSetting = (
     fail(context, `${kind} has ${names.join(', ')}.`);
   }
 
-  if (setting.field === 'isMuted' || setting.field === 'isSoloed') {
+  if (isBooleanSetting(setting)) {
     channel.mixer = withMixerValue(
       channel.mixer,
       setting.field,
@@ -88,8 +89,6 @@ const readBoolean = (context: ReadContext, name: string, valueText: string): boo
   if (!BOOLEAN_VALUE.test(valueText)) fail(context, `${name} is true or false.`);
   return valueText === 'true';
 };
-
-type NumericChannelSetting = Exclude<ChannelSettingEntry, { field: 'isMuted' | 'isSoloed' }>;
 
 const readNumber = (
   context: ReadContext,
