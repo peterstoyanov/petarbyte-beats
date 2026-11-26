@@ -40,3 +40,12 @@ describe('parseKey', () => {
     expect(parseKey(text)).toBeUndefined();
   });
 });
+
+describe('parseKey on long input', () => {
+  it('stays fast on long runs of spaces', () => {
+    const spaces = ' '.repeat(50_000);
+    const start = performance.now();
+    parseKey(`C m${spaces}x${spaces}y`);
+    expect(performance.now() - start).toBeLessThan(1000);
+  });
+});

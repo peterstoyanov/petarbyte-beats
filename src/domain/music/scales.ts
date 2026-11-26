@@ -22,11 +22,15 @@ export type Key = {
   readonly scale: ScaleName;
 };
 
-const KEY_PATTERN = /^\s*([A-Ga-g])(#|b)?\s+(.+?)\s*$/;
+/**
+ * Matched against trimmed text, so the scale needs no lazy group to drop trailing spaces: with one,
+ * a long run of spaces made matching quadratic (ReDoS).
+ */
+const KEY_PATTERN = /^([A-Ga-g])(#|b)?\s+([\s\S]+)$/;
 
 /** Reads a key such as "A minor", "F# major" or "D dorian". Returns undefined for anything else. */
 export const parseKey = (text: string): Key | undefined => {
-  const match = KEY_PATTERN.exec(text);
+  const match = KEY_PATTERN.exec(text.trim());
   if (!match) return undefined;
 
   const [, letter = '', accidental = '', scaleText = ''] = match;
