@@ -8,8 +8,8 @@ export const DEFAULT_MIXER: Mixer = {
   cutoff: 1,
   resonance: 0,
   sidechain: 0,
-  muted: false,
-  soloed: false,
+  isMuted: false,
+  isSoloed: false,
 };
 
 export const DEFAULT_DRUM_SETTINGS = { pitch: 0, decay: 1 } as const;

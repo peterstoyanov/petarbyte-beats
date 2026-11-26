@@ -2,7 +2,7 @@ import type { Range } from './limits';
 import type { DrumChannel, InstrumentChannel, Mixer } from './types';
 
 type NumericSetting =
-  | Exclude<keyof Mixer, 'muted' | 'soloed'>
+  | Exclude<keyof Mixer, 'isMuted' | 'isSoloed'>
   | keyof Pick<DrumChannel, 'pitch' | 'decay'>
   | keyof Pick<InstrumentChannel, 'releaseSeconds'>;
 

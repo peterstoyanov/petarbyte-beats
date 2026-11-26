@@ -27,8 +27,8 @@ export type Mixer = {
   readonly resonance: number;
   /** How much the channel ducks when a kick plays. */
   readonly sidechain: number;
-  readonly muted: boolean;
-  readonly soloed: boolean;
+  readonly isMuted: boolean;
+  readonly isSoloed: boolean;
 };
 
 type ChannelBase = {

@@ -27,8 +27,7 @@ export const formatDrumSteps = (steps: readonly DrumStep[]): string =>
  */
 export const fitDrumSteps = (text: string, count: number): DrumStep[] => {
   const symbols = text.replace(/[|\s]/g, '');
-  const repeatsEvenly =
-    symbols.length > 0 && symbols.length < count && count % symbols.length === 0;
-  const filled = repeatsEvenly ? symbols.repeat(count / symbols.length) : symbols;
+  const shouldRepeat = symbols.length > 0 && symbols.length < count && count % symbols.length === 0;
+  const filled = shouldRepeat ? symbols.repeat(count / symbols.length) : symbols;
   return Array.from({ length: count }, (_, index) => stepOf(filled[index]));
 };
