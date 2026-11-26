@@ -11,13 +11,14 @@ in-browser studio on pstoyanov.net.
 
 ## Roadmap
 
-- [ ] Song model with two-way sync between the grid and the C# code
+- [x] Song model, read from and written as C# code exactly as the web studio does
+- [ ] Two-way sync between the grid and the code
 - [ ] Audio engine: synthesized drums and instruments, sampled grand piano
 - [ ] Channel rack and step sequencer with swing
 - [ ] Piano roll with scales, chords and velocity
 - [ ] Mixer: volume, pan, reverb, delay, filter and sidechain
 - [ ] Patterns and song arrangement
-- [ ] Built-in example songs
+- [x] Built-in example songs
 - [ ] Code view in other programming languages
 - [ ] Undo and redo
 - [ ] In-app coach
@@ -26,19 +27,24 @@ in-browser studio on pstoyanov.net.
 
 - [Expo](https://expo.dev) SDK 58 and React Native 0.88
 - TypeScript in strict mode
+- [React Native Audio API](https://docs.swmansion.com/react-native-audio-api/) for the sound engine
 - Jest with [React Native Testing Library](https://callstack.github.io/react-native-testing-library/)
 - ESLint and Prettier
 
 ## Getting started
 
-Requirements: Node.js 22 (see `.nvmrc`) and npm.
+Requirements: Node.js 22 (see `.nvmrc`), npm, and Android Studio or Xcode.
+
+The sound engine is native code, so the app runs as a
+[development build](https://docs.expo.dev/develop/development-builds/introduction/), not in Expo
+Go. The first run builds it and installs it on a connected device or emulator:
 
 ```bash
 npm install
-npm start
+npx expo run:android   # or: npx expo run:ios
 ```
 
-Then open the app on a device or simulator from the Expo CLI menu.
+After that, `npm start` is enough until a native dependency changes.
 
 ## Scripts
 
@@ -51,6 +57,19 @@ Then open the app on a device or simulator from the Expo CLI menu.
 | `npm run format`       | Format all files with Prettier         |
 | `npm run format:check` | Check formatting without changing it   |
 | `npm run lint:secrets` | Scan the whole project for secrets     |
+
+## Differences from the web studio
+
+The app mirrors the web studio. Where it differs, it is on purpose:
+
+- **The master bus has a soft clipper instead of a compressor.** React Native Audio API has no
+  `DynamicsCompressorNode` yet, so the web studio's glue compressor is left out and its limiter is
+  replaced by a wave shaper that bends peaks under full scale. Dense mixes sound a little less
+  glued together.
+- **The sidechain duck starts from where the last one has got to.** The web studio reads the level
+  when it schedules a kick, a little ahead of time, so a kick that lands while the last duck is
+  still swelling back can click there.
+- **Durations round before they are split**, so 59.6 seconds reads 1:00, not 0:60.
 
 ## Quality and security
 
