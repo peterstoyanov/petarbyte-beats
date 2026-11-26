@@ -1,3 +1,4 @@
+import type { PatternName } from './ids';
 import { stepCount, type BarCount } from './limits';
 import type { Channel, DrumStep, Pattern } from './types';
 
@@ -6,7 +7,7 @@ export const emptyHits = (bars: BarCount): DrumStep[] =>
 
 /** A pattern with no hits and no notes yet, with an entry for every channel. */
 export const createPattern = (
-  name: string,
+  name: PatternName,
   bars: BarCount,
   channels: readonly Channel[],
 ): Pattern => ({

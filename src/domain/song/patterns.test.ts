@@ -1,6 +1,7 @@
 import { describe, expect, it } from '@jest/globals';
 
 import { createDrumChannel, createInstrumentChannel } from './channels';
+import { requireChannelId, requirePatternName } from './ids';
 import { createPattern, emptyHits } from './patterns';
 
 describe('emptyHits', () => {
@@ -11,9 +12,12 @@ describe('emptyHits', () => {
 
 describe('createPattern', () => {
   it('has empty hits for every drum and no notes for every instrument', () => {
-    const channels = [createDrumChannel('kick', 'kick808'), createInstrumentChannel('bass', 'sub')];
+    const channels = [
+      createDrumChannel(requireChannelId('kick'), 'kick808'),
+      createInstrumentChannel(requireChannelId('bass'), 'sub'),
+    ];
 
-    expect(createPattern('intro', 1, channels)).toEqual({
+    expect(createPattern(requirePatternName('intro'), 1, channels)).toEqual({
       name: 'intro',
       bars: 1,
       hits: { kick: emptyHits(1) },
