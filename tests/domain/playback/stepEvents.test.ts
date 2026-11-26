@@ -90,4 +90,25 @@ describe('stepEvents', () => {
     );
     expect(eventsAt(ducked, 0)).toEqual(['hit kick 0.75', 'duck pad']);
   });
+
+  it('ducks for any kick, not only the 808', () => {
+    const lofi = songFrom(
+      'var song = new Song();',
+      'var kick = song.Drum(Drums.LofiKick, "x...............");',
+      'var pad = song.Instrument(Instruments.WarmPad);',
+      'pad.Sidechain = 0.5;',
+    );
+    expect(eventsAt(lofi, 0)).toEqual(['hit kick 0.75', 'duck pad']);
+  });
+
+  it('does not duck for a kick that is muted', () => {
+    const silent = songFrom(
+      'var song = new Song();',
+      'var kick = song.Drum(Drums.Kick808, "x...............");',
+      'kick.Mute = true;',
+      'var pad = song.Instrument(Instruments.WarmPad);',
+      'pad.Sidechain = 0.5;',
+    );
+    expect(eventsAt(silent, 0)).toEqual([]);
+  });
 });

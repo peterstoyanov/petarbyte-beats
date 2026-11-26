@@ -30,8 +30,12 @@ export const playOrder = (song: Song, editedPatternIndex = 0): PlayOrder => {
     return pattern ? [pattern] : [];
   });
   if (first !== undefined) return [first, ...rest];
-  return [song.patterns[editedPatternIndex] ?? song.patterns[0]];
+  return [editedPattern(song, editedPatternIndex)];
 };
+
+/** The pattern on screen, or the first pattern if that index does not exist. */
+export const editedPattern = (song: Song, index: number): Pattern =>
+  song.patterns[index] ?? song.patterns[0];
 
 /**
  * How late a step is played because of swing. Only every second step is delayed, by

@@ -26,6 +26,9 @@ const SONG = songFrom(
 );
 const STEP = 0.125;
 
+/** A horizon just before the given number of steps has passed. */
+const justBefore = (steps: number): number => steps * STEP - 0.001;
+
 const schedule = (overrides: Partial<ScheduleSpec>) =>
   scheduleSteps({
     song: SONG,
@@ -33,7 +36,7 @@ const schedule = (overrides: Partial<ScheduleSpec>) =>
     editedPatternIndex: 0,
     isMetronomeOn: false,
     playhead: startPlayhead(0),
-    until: STEP * 4 - 0.001,
+    until: justBefore(4),
     ...overrides,
   });
 
@@ -49,7 +52,7 @@ describe('scheduleSteps', () => {
   });
 
   it('carries on from the playhead it returned without a gap', () => {
-    const first = schedule({ until: 2 * STEP - 0.001 });
+    const first = schedule({ until: justBefore(2) });
     const second = schedule({ playhead: first.playhead });
     expect([...first.steps, ...second.steps].map((step) => step.step)).toEqual([0, 1, 2, 3]);
   });
@@ -61,47 +64,63 @@ describe('scheduleSteps', () => {
     expect(times).toEqual([0, STEP + STEP * 0.25, 2 * STEP, 3 * STEP + STEP * 0.25]);
   });
 
-  it('follows the arrangement and starts over after it', () => {
+  it('moves to the next pattern of the arrangement', () => {
+    const lastStepOfIntro: Playhead = { slot: 0, step: 15, time: 0 };
+    expect(positions({ playhead: lastStepOfIntro, until: justBefore(2) })).toEqual(['0:15', '1:0']);
+  });
+
+  it('starts over after the arrangement', () => {
     const lastStepOfVerse: Playhead = { slot: 1, step: 31, time: 0 };
-    expect(
-      positions({ playhead: { slot: 0, step: 15, time: 0 }, until: 2 * STEP - 0.001 }),
-    ).toEqual(['0:15', '1:0']);
-    expect(positions({ playhead: lastStepOfVerse, until: 2 * STEP - 0.001 })).toEqual([
-      '1:31',
-      '0:0',
-    ]);
+    expect(positions({ playhead: lastStepOfVerse, until: justBefore(2) })).toEqual(['1:31', '0:0']);
   });
 
   it('loops the pattern on screen in pattern mode', () => {
     const playhead: Playhead = { slot: 0, step: 31, time: 0 };
     expect(
-      positions({ mode: 'pattern', editedPatternIndex: 1, playhead, until: 2 * STEP - 0.001 }),
+      positions({ mode: 'pattern', editedPatternIndex: 1, playhead, until: justBefore(2) }),
     ).toEqual(['0:31', '0:0']);
   });
 
   it('moves on when an edit made the pattern shorter than the playhead', () => {
     const playhead: Playhead = { slot: 0, step: 20, time: 0 };
-    expect(positions({ playhead, until: STEP - 0.001 })).toEqual(['1:0']);
+    expect(positions({ playhead, until: justBefore(1) })).toEqual(['1:0']);
   });
 
   it('starts over when an edit made the arrangement shorter than the playhead', () => {
     const playhead: Playhead = { slot: 5, step: 3, time: 0 };
-    expect(positions({ playhead, until: STEP - 0.001 })).toEqual(['0:3']);
+    expect(positions({ playhead, until: justBefore(1) })).toEqual(['0:3']);
   });
 
   it('plays what the step holds', () => {
     const [first] = schedule({}).steps;
-    expect(first?.pattern.name).toBe('intro');
+    expect(first?.patternName).toBe('intro');
     expect(first?.events).toMatchObject([{ kind: 'hit', velocity: 0.75 }]);
   });
 
   it('clicks on every beat with the metronome on, louder on the bar', () => {
-    const until = 9 * STEP - 0.001;
+    const until = justBefore(9);
     const clicks = schedule({ isMetronomeOn: true, until }).steps.flatMap((step) =>
       step.events.flatMap((event) =>
         event.kind === 'click' ? [`${step.step}${event.isBarStart ? ' bar' : ''}`] : [],
       ),
     );
     expect(clicks).toEqual(['0 bar', '4', '8']);
+  });
+
+  it('schedules nothing when the horizon is not past the playhead', () => {
+    const playhead = startPlayhead(1);
+    expect(schedule({ playhead, until: 1 })).toEqual({ steps: [], playhead });
+  });
+
+  it('loops the first pattern when the one on screen does not exist', () => {
+    const playhead: Playhead = { slot: 0, step: 15, time: 0 };
+    expect(
+      positions({ mode: 'pattern', editedPatternIndex: 9, playhead, until: justBefore(2) }),
+    ).toEqual(['0:15', '0:0']);
+  });
+
+  it('refuses a tempo that would never move forward', () => {
+    expect(() => schedule({ song: { ...SONG, bpm: -120 } })).toThrow(RangeError);
+    expect(() => schedule({ song: { ...SONG, bpm: 0 } })).toThrow(RangeError);
   });
 });
