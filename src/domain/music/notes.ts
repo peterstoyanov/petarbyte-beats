@@ -44,11 +44,17 @@ export const parseNote = (text: string): MidiNote | undefined => {
   if (!match) return undefined;
 
   const [, letter = '', accidental = '', octave = ''] = match;
-  const semitones = semitonesFromC(letter, isAccidental(accidental) ? accidental : undefined);
+  const semitones = semitonesFromC(letter, parseAccidental(accidental));
   if (semitones === undefined) return undefined;
 
   return semitones + (Number(octave) + OCTAVE_NUMBER_OFFSET) * SEMITONES_PER_OCTAVE;
 };
+
+/** Reads "#" or "b". Returns undefined for anything else, including no accidental at all. */
+export const parseAccidental = (text: string): Accidental | undefined =>
+  isAccidental(text) ? text : undefined;
+
+const isAccidental = (text: string): text is Accidental => Object.hasOwn(ACCIDENTAL_SHIFTS, text);
 
 /**
  * Semitones from C to a spelled note such as "F#" or "Bb", or undefined if the letter is not A–G.
@@ -64,9 +70,6 @@ export const semitonesFromC = (letter: string, accidental?: Accidental): number 
 
 const isNoteLetter = (letter: string): letter is NoteLetter =>
   Object.hasOwn(SEMITONES_FROM_C, letter);
-
-export const isAccidental = (text: string): text is Accidental =>
-  Object.hasOwn(ACCIDENTAL_SHIFTS, text);
 
 /** The scientific name of a MIDI note, such as "C4" for 60 or "F#3" for 54. */
 export const noteName = (midi: MidiNote): string => {
