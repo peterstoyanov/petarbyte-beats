@@ -1,0 +1,9 @@
+version: 2
+updates:
+  # GitHub Actions are pinned to commit SHAs; Dependabot keeps those pins current.
+  # npm packages are intentionally not managed here: Expo SDK packages must be
+  # upgraded together via `npx expo install --fix` / `expo-upgrade`, not one by one.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
