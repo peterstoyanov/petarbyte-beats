@@ -117,6 +117,9 @@ export type SoundId = DrumId | InstrumentId;
 
 export const isDrumId = (id: string): id is DrumId => Object.hasOwn(DRUMS, id);
 
+/** Kicks are the drums that make sidechained channels duck. */
+export const isKick = (id: DrumId): boolean => id.startsWith('kick');
+
 export const isInstrumentId = (id: string): id is InstrumentId => Object.hasOwn(INSTRUMENTS, id);
 
 export const soundLabel = (id: SoundId): string =>

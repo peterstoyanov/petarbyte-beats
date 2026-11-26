@@ -16,17 +16,20 @@ export const songSeconds = (song: Song, editedPatternIndex = 0): number =>
     0,
   );
 
+/** The patterns in the order they play; there is always at least one. */
+export type PlayOrder = readonly [Pattern, ...Pattern[]];
+
 /**
  * The patterns in the order they play. A song without an arrangement loops the pattern being
  * edited, or the first pattern if that index does not exist. Names in the arrangement that match
  * no pattern are skipped.
  */
-export const playOrder = (song: Song, editedPatternIndex = 0): readonly Pattern[] => {
-  const arranged = song.arrangement.flatMap((name) => {
+export const playOrder = (song: Song, editedPatternIndex = 0): PlayOrder => {
+  const [first, ...rest] = song.arrangement.flatMap((name) => {
     const pattern = song.patterns.find((candidate) => candidate.name === name);
     return pattern ? [pattern] : [];
   });
-  if (arranged.length > 0) return arranged;
+  if (first !== undefined) return [first, ...rest];
   return [song.patterns[editedPatternIndex] ?? song.patterns[0]];
 };
 
