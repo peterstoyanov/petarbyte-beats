@@ -1,6 +1,6 @@
 import { describe, expect, it } from '@jest/globals';
 
-import { BAR_COUNTS, isBarCount, isWithin, stepCount, STEPS_PER_BAR } from './limits';
+import { BAR_COUNTS, isBarCount, isWithin, stepCount, STEPS_PER_BAR } from '@/domain/song/limits';
 
 describe('the step grid', () => {
   it('has 16 steps per bar', () => {

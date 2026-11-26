@@ -1,6 +1,12 @@
 import { describe, expect, it } from '@jest/globals';
 
-import { noteName, parseAccidental, parseNote, pitchClassOf, semitonesFromC } from './notes';
+import {
+  noteName,
+  parseAccidental,
+  parseNote,
+  pitchClassOf,
+  semitonesFromC,
+} from '@/domain/music/notes';
 
 describe('noteName', () => {
   it.each([

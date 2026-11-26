@@ -1,7 +1,7 @@
 import { describe, expect, it } from '@jest/globals';
 
-import { fitDrumSteps, formatDrumSteps } from './drumSteps';
-import type { DrumStep } from './types';
+import { fitDrumSteps, formatDrumSteps } from '@/domain/song/drumSteps';
+import type { DrumStep } from '@/domain/song/types';
 
 describe('formatDrumSteps', () => {
   it('writes hits, loud hits and rests', () => {

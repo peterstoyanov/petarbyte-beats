@@ -1,6 +1,6 @@
 import { describe, expect, it } from '@jest/globals';
 
-import { isScaleName, parseKey, SCALES } from './scales';
+import { isScaleName, parseKey, SCALES } from '@/domain/music/scales';
 
 describe('SCALES', () => {
   it.each(Object.entries(SCALES))(
