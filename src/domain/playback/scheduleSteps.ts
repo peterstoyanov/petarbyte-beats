@@ -1,5 +1,12 @@
 import { STEPS_PER_BAR, STEPS_PER_BEAT, stepCount, type Steps } from '../song/limits';
-import { playOrder, stepSeconds, swingOffsetSeconds, type PlayOrder } from '../song/timing';
+import type { PatternName } from '../song/ids';
+import {
+  editedPattern,
+  playOrder,
+  stepSeconds,
+  swingOffsetSeconds,
+  type PlayOrder,
+} from '../song/timing';
 import type { Pattern, Song } from '../song/types';
 import { stepEvents, type StepEvent } from './stepEvents';
 
@@ -27,7 +34,7 @@ export type ScheduledStep = {
   /** When the step sounds, swing included. */
   readonly time: number;
   readonly slot: number;
-  readonly pattern: Pattern;
+  readonly patternName: PatternName;
   readonly step: Steps;
   readonly events: readonly PlaybackEvent[];
 };
@@ -71,7 +78,8 @@ export const scheduleSteps = (spec: ScheduleSpec): Schedule => {
   let playhead = spec.playhead;
   while (playhead.time < spec.until) {
     const position = positionOf(playhead, order);
-    steps.push(scheduledStep({ spec, position, time: playhead.time }));
+    const { song, isMetronomeOn } = spec;
+    steps.push(scheduledStep({ song, isMetronomeOn, position, time: playhead.time }));
     playhead = { slot: position.slot, step: position.step + 1, time: playhead.time + stepLength };
   }
 
@@ -79,9 +87,7 @@ export const scheduleSteps = (spec: ScheduleSpec): Schedule => {
 };
 
 const patternsInPlay = ({ song, mode, editedPatternIndex }: ScheduleSpec): PlayOrder =>
-  mode === 'song'
-    ? playOrder(song, editedPatternIndex)
-    : [song.patterns[editedPatternIndex] ?? song.patterns[0]];
+  mode === 'song' ? playOrder(song, editedPatternIndex) : [editedPattern(song, editedPatternIndex)];
 
 type Position = {
   readonly slot: number;
@@ -104,19 +110,22 @@ const positionOf = (playhead: Playhead, order: PlayOrder): Position => {
 
 const patternAt = (order: PlayOrder, slot: number): Pattern => order[slot] ?? order[0];
 
-type ScheduledStepSpec = {
-  readonly spec: ScheduleSpec;
+type ScheduledStepSpec = Pick<ScheduleSpec, 'song' | 'isMetronomeOn'> & {
   readonly position: Position;
   readonly time: number;
 };
 
-const scheduledStep = ({ spec, position, time }: ScheduledStepSpec): ScheduledStep => {
-  const { song, isMetronomeOn } = spec;
+const scheduledStep = ({
+  song,
+  isMetronomeOn,
+  position,
+  time,
+}: ScheduledStepSpec): ScheduledStep => {
   const { slot, step, pattern } = position;
   return {
     time: time + swingOffsetSeconds(song, step),
     slot,
-    pattern,
+    patternName: pattern.name,
     step,
     events: [...stepEvents({ song, pattern, step }), ...metronomeClicks(isMetronomeOn, step)],
   };
