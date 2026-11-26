@@ -5,9 +5,9 @@ import { join } from 'node:path';
 import { parseSongCode } from '@/domain/csharp/parseSongCode';
 import { writeSongCode } from '@/domain/csharp/writeSongCode';
 
-const FIXTURES = join(__dirname, '..', '..', 'fixtures', 'songs');
+const SONGS_FOLDER = join(__dirname, '..', '..', '..', 'src', 'presets', 'songs');
 
-const songFiles = readdirSync(FIXTURES).filter((file) => file.endsWith('.cs'));
+const songFiles = readdirSync(SONGS_FOLDER).filter((file) => file.endsWith('.cs'));
 
 describe('the web studio songs', () => {
   it('are all here', () => {
@@ -15,7 +15,7 @@ describe('the web studio songs', () => {
   });
 
   it.each(songFiles)('%s is read and written back exactly', (file) => {
-    const code = readFileSync(join(FIXTURES, file), 'utf8');
+    const code = readFileSync(join(SONGS_FOLDER, file), 'utf8');
 
     const result = parseSongCode(code);
     if (result.status !== 'parsed') throw new Error(result.problem.message);
