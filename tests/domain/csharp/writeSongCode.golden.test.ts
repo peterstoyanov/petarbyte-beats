@@ -1,25 +1,17 @@
 import { describe, expect, it } from '@jest/globals';
-import { readdirSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
 
 import { parseSongCode } from '@/domain/csharp/parseSongCode';
 import { writeSongCode } from '@/domain/csharp/writeSongCode';
-
-const FIXTURES = join(__dirname, '..', '..', 'fixtures', 'songs');
-
-const songFiles = readdirSync(FIXTURES).filter((file) => file.endsWith('.cs'));
+import { PRESETS } from '@/presets/catalog';
 
 describe('the web studio songs', () => {
-  it('are all here', () => {
-    expect(songFiles).toHaveLength(27);
-  });
+  it.each(PRESETS.map((preset) => [preset.id, preset.code]))(
+    '%s is read and written back exactly',
+    (_id, code) => {
+      const result = parseSongCode(code);
+      if (result.status !== 'parsed') throw new Error(result.problem.message);
 
-  it.each(songFiles)('%s is read and written back exactly', (file) => {
-    const code = readFileSync(join(FIXTURES, file), 'utf8');
-
-    const result = parseSongCode(code);
-    if (result.status !== 'parsed') throw new Error(result.problem.message);
-
-    expect(writeSongCode(result.song)).toBe(code);
-  });
+      expect(writeSongCode(result.song)).toBe(code);
+    },
+  );
 });
