@@ -22,48 +22,19 @@ export const NOTE_NAMES = [
 
 export type NoteName = (typeof NOTE_NAMES)[number];
 
-const SEMITONES_PER_OCTAVE = 12;
-
-const SEMITONES_FROM_C = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 } as const;
-
-type NoteLetter = keyof typeof SEMITONES_FROM_C;
-
-const isNoteLetter = (letter: string): letter is NoteLetter =>
-  Object.hasOwn(SEMITONES_FROM_C, letter);
-
 const ACCIDENTAL_SHIFTS = { '#': 1, b: -1 } as const;
 
 /** A sharp (#) raises a note by a semitone, a flat (b) lowers it by one. */
 export type Accidental = keyof typeof ACCIDENTAL_SHIFTS;
 
-export const isAccidental = (text: string): text is Accidental =>
-  Object.hasOwn(ACCIDENTAL_SHIFTS, text);
+const SEMITONES_FROM_C = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 } as const;
 
-/**
- * Semitones from C to a spelled note such as "F#" or "Bb", or undefined if the letter is not A–G.
- * Not wrapped into one octave: "Cb" is -1 and "B#" is 12.
- */
-export const semitonesFromC = (letter: string, accidental?: Accidental): number | undefined => {
-  const upperLetter = letter.toUpperCase();
-  if (!isNoteLetter(upperLetter)) return undefined;
-  const shift = accidental === undefined ? 0 : ACCIDENTAL_SHIFTS[accidental];
-  return SEMITONES_FROM_C[upperLetter] + shift;
-};
+type NoteLetter = keyof typeof SEMITONES_FROM_C;
 
-/** The pitch class of a note: 0 for C up to 11 for B, in any octave. */
-export const pitchClassOf = (midi: MidiNote): PitchClass =>
-  ((midi % SEMITONES_PER_OCTAVE) + SEMITONES_PER_OCTAVE) % SEMITONES_PER_OCTAVE;
+const SEMITONES_PER_OCTAVE = 12;
 
-const octaveOf = (midi: MidiNote): number => Math.floor(midi / SEMITONES_PER_OCTAVE) - 1;
-
-/** The scientific name of a MIDI note, such as "C4" for 60 or "F#3" for 54. */
-export const noteName = (midi: MidiNote): string => {
-  const name = NOTE_NAMES[pitchClassOf(midi)];
-  if (name === undefined) {
-    throw new RangeError(`${midi} is not a MIDI note number.`);
-  }
-  return `${name}${octaveOf(midi)}`;
-};
+/** MIDI note 0 is C-1, so octave numbers run one behind the MIDI octave count. */
+const OCTAVE_NUMBER_OFFSET = 1;
 
 const NOTE_PATTERN = /^([A-Ga-g])(#|b)?(-?\d)$/;
 
@@ -73,8 +44,44 @@ export const parseNote = (text: string): MidiNote | undefined => {
   if (!match) return undefined;
 
   const [, letter = '', accidental = '', octave = ''] = match;
-  const semitones = semitonesFromC(letter, isAccidental(accidental) ? accidental : undefined);
+  const semitones = semitonesFromC(letter, parseAccidental(accidental));
   if (semitones === undefined) return undefined;
 
-  return semitones + (Number(octave) + 1) * SEMITONES_PER_OCTAVE;
+  return semitones + (Number(octave) + OCTAVE_NUMBER_OFFSET) * SEMITONES_PER_OCTAVE;
 };
+
+/** Reads "#" or "b". Returns undefined for anything else, including no accidental at all. */
+export const parseAccidental = (text: string): Accidental | undefined =>
+  isAccidental(text) ? text : undefined;
+
+const isAccidental = (text: string): text is Accidental => Object.hasOwn(ACCIDENTAL_SHIFTS, text);
+
+/**
+ * Semitones from C to a spelled note such as "F#" or "Bb", or undefined if the letter is not A–G.
+ * Not wrapped into one octave: "Cb" is -1 and "B#" is 12.
+ */
+export const semitonesFromC = (letter: string, accidental?: Accidental): number | undefined => {
+  const upperLetter = letter.toUpperCase();
+  if (!isNoteLetter(upperLetter)) return undefined;
+
+  const shift = accidental === undefined ? 0 : ACCIDENTAL_SHIFTS[accidental];
+  return SEMITONES_FROM_C[upperLetter] + shift;
+};
+
+const isNoteLetter = (letter: string): letter is NoteLetter =>
+  Object.hasOwn(SEMITONES_FROM_C, letter);
+
+/** The scientific name of a MIDI note, such as "C4" for 60 or "F#3" for 54. */
+export const noteName = (midi: MidiNote): string => {
+  const name = NOTE_NAMES[pitchClassOf(midi)];
+  if (name === undefined) throw new RangeError(`${midi} is not a MIDI note number.`);
+
+  return `${name}${octaveOf(midi)}`;
+};
+
+/** The pitch class of a note: 0 for C up to 11 for B, in any octave. */
+export const pitchClassOf = (midi: MidiNote): PitchClass =>
+  ((midi % SEMITONES_PER_OCTAVE) + SEMITONES_PER_OCTAVE) % SEMITONES_PER_OCTAVE;
+
+const octaveOf = (midi: MidiNote): number =>
+  Math.floor(midi / SEMITONES_PER_OCTAVE) - OCTAVE_NUMBER_OFFSET;

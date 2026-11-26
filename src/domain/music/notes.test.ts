@@ -1,6 +1,6 @@
 import { describe, expect, it } from '@jest/globals';
 
-import { isAccidental, noteName, parseNote, pitchClassOf, semitonesFromC } from './notes';
+import { noteName, parseAccidental, parseNote, pitchClassOf, semitonesFromC } from './notes';
 
 describe('noteName', () => {
   it.each([
@@ -61,12 +61,14 @@ describe('semitonesFromC', () => {
   });
 });
 
-describe('isAccidental', () => {
-  it('accepts a sharp and a flat only', () => {
-    expect(isAccidental('#')).toBe(true);
-    expect(isAccidental('b')).toBe(true);
-    expect(isAccidental('x')).toBe(false);
-    expect(isAccidental('')).toBe(false);
+describe('parseAccidental', () => {
+  it('reads a sharp and a flat', () => {
+    expect(parseAccidental('#')).toBe('#');
+    expect(parseAccidental('b')).toBe('b');
+  });
+
+  it.each(['', 'x', '##', 'B', 'toString'])('rejects %p', (text) => {
+    expect(parseAccidental(text)).toBeUndefined();
   });
 });
 

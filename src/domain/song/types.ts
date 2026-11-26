@@ -1,15 +1,16 @@
 import type { MidiNote } from '../music/notes';
 import type { DrumId, InstrumentId } from '../sounds/catalog';
-import type { BarCount } from './limits';
+import type { ChannelId, PatternName } from './ids';
+import type { BarCount, Steps } from './limits';
 
 /** One step of a drum pattern: 0 is a rest, 1 a hit and 2 a loud hit. */
 export type DrumStep = 0 | 1 | 2;
 
 export type Note = {
   /** The step the note starts on, counted from 0 at the start of its pattern. */
-  readonly step: number;
+  readonly step: Steps;
   /** How many steps the note lasts. */
-  readonly length: number;
+  readonly length: Steps;
   readonly midi: MidiNote;
   /** How hard the note is played, see VELOCITY_RANGE. */
   readonly velocity: number;
@@ -27,13 +28,12 @@ export type Mixer = {
   readonly resonance: number;
   /** How much the channel ducks when a kick plays. */
   readonly sidechain: number;
-  readonly muted: boolean;
-  readonly soloed: boolean;
+  readonly isMuted: boolean;
+  readonly isSoloed: boolean;
 };
 
 type ChannelBase = {
-  /** The channel's name in the code, such as "kick" or "piano". Unique within a song. */
-  readonly id: string;
+  readonly id: ChannelId;
   readonly mixer: Mixer;
 };
 
@@ -59,11 +59,10 @@ export type Channel = DrumChannel | InstrumentChannel;
  * step per step of the pattern (stepCount(bars) long). Every instrument channel has one in notes.
  */
 export type Pattern = {
-  /** The pattern's name in the code, such as "intro". Unique within a song. */
-  readonly name: string;
+  readonly name: PatternName;
   readonly bars: BarCount;
-  readonly hits: Readonly<Record<string, readonly DrumStep[]>>;
-  readonly notes: Readonly<Record<string, readonly Note[]>>;
+  readonly hits: Readonly<Record<ChannelId, readonly DrumStep[]>>;
+  readonly notes: Readonly<Record<ChannelId, readonly Note[]>>;
 };
 
 /** The master bus: overall volume, and how much of the shared reverb and delay comes back. */
@@ -84,5 +83,5 @@ export type Song = {
   /** A song always has at least one pattern. */
   readonly patterns: readonly [Pattern, ...Pattern[]];
   /** Pattern names in the order they play. Empty when the song is a single loop. */
-  readonly arrangement: readonly string[];
+  readonly arrangement: readonly PatternName[];
 };

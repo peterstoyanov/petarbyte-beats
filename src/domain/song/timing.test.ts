@@ -2,23 +2,24 @@ import { describe, expect, it } from '@jest/globals';
 
 import { createDrumChannel } from './channels';
 import { DEFAULT_MASTER } from './defaults';
+import { requireChannelId, requirePatternName } from './ids';
+import { SONG_LIMITS } from './limits';
 import { createPattern } from './patterns';
 import { formatDuration, playOrder, songSeconds, stepSeconds, swingOffsetSeconds } from './timing';
-import { SONG_LIMITS } from './limits';
 import type { Song } from './types';
 
-const kick = createDrumChannel('kick', 'kick808');
-const intro = createPattern('intro', 1, [kick]);
-const verse = createPattern('verse', 2, [kick]);
+const kick = createDrumChannel(requireChannelId('kick'), 'kick808');
+const intro = createPattern({ name: requirePatternName('intro'), bars: 1, channels: [kick] });
+const verse = createPattern({ name: requirePatternName('verse'), bars: 2, channels: [kick] });
 
-const songWith = (arrangement: readonly string[]): Song => ({
+const songWith = (patternNames: readonly string[]): Song => ({
   bpm: 120,
   swing: 0,
   key: 'C major',
   master: DEFAULT_MASTER,
   channels: [kick],
   patterns: [intro, verse],
-  arrangement,
+  arrangement: patternNames.map(requirePatternName),
 });
 
 describe('stepSeconds', () => {

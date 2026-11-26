@@ -1,4 +1,4 @@
-import { isAccidental, pitchClassOf, semitonesFromC, type PitchClass } from './notes';
+import { parseAccidental, pitchClassOf, semitonesFromC, type PitchClass } from './notes';
 
 /** Each scale as the semitones of its notes above the root. */
 export const SCALES = {
@@ -30,7 +30,7 @@ export const parseKey = (text: string): Key | undefined => {
   if (!match) return undefined;
 
   const [, letter = '', accidental = '', scaleText = ''] = match;
-  const semitones = semitonesFromC(letter, isAccidental(accidental) ? accidental : undefined);
+  const semitones = semitonesFromC(letter, parseAccidental(accidental));
   const scale = scaleText.toLowerCase();
   if (semitones === undefined || !isScaleName(scale)) return undefined;
 
