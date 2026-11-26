@@ -107,6 +107,18 @@ describe('scheduleSteps', () => {
     expect(clicks).toEqual(['0 bar', '4', '8']);
   });
 
+  it('schedules nothing when the horizon is not past the playhead', () => {
+    const playhead = startPlayhead(1);
+    expect(schedule({ playhead, until: 1 })).toEqual({ steps: [], playhead });
+  });
+
+  it('loops the first pattern when the one on screen does not exist', () => {
+    const playhead: Playhead = { slot: 0, step: 15, time: 0 };
+    expect(
+      positions({ mode: 'pattern', editedPatternIndex: 9, playhead, until: justBefore(2) }),
+    ).toEqual(['0:15', '0:0']);
+  });
+
   it('refuses a tempo that would never move forward', () => {
     expect(() => schedule({ song: { ...SONG, bpm: -120 } })).toThrow(RangeError);
     expect(() => schedule({ song: { ...SONG, bpm: 0 } })).toThrow(RangeError);
