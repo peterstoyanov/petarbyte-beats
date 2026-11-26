@@ -17,7 +17,7 @@ describe('createPattern', () => {
       createInstrumentChannel(requireChannelId('bass'), 'sub'),
     ];
 
-    expect(createPattern(requirePatternName('intro'), 1, channels)).toEqual({
+    expect(createPattern({ name: requirePatternName('intro'), bars: 1, channels })).toEqual({
       name: 'intro',
       bars: 1,
       hits: { kick: emptyHits(1) },

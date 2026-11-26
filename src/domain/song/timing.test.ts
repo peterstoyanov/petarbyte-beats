@@ -9,8 +9,8 @@ import { SONG_LIMITS } from './limits';
 import type { Song } from './types';
 
 const kick = createDrumChannel(requireChannelId('kick'), 'kick808');
-const intro = createPattern(requirePatternName('intro'), 1, [kick]);
-const verse = createPattern(requirePatternName('verse'), 2, [kick]);
+const intro = createPattern({ name: requirePatternName('intro'), bars: 1, channels: [kick] });
+const verse = createPattern({ name: requirePatternName('verse'), bars: 2, channels: [kick] });
 
 const songWith = (patternNames: readonly string[]): Song => ({
   bpm: 120,
