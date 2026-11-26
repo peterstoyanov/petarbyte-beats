@@ -9,6 +9,13 @@ import { DEFAULT_DRUM_SETTINGS, DEFAULT_MIXER } from './defaults';
 import type { ChannelId } from './ids';
 import type { Channel, DrumChannel, InstrumentChannel } from './types';
 
+/**
+ * A channel with default settings for any sound: a drum channel for drums, otherwise an
+ * instrument channel.
+ */
+export const createChannel = (id: ChannelId, sound: SoundId): Channel =>
+  isDrumId(sound) ? createDrumChannel(id, sound) : createInstrumentChannel(id, sound);
+
 export const createDrumChannel = (id: ChannelId, sound: DrumId): DrumChannel => ({
   kind: 'drum',
   id,
@@ -24,7 +31,3 @@ export const createInstrumentChannel = (id: ChannelId, sound: InstrumentId): Ins
   mixer: DEFAULT_MIXER,
   releaseSeconds: INSTRUMENTS[sound].releaseSeconds,
 });
-
-/** A channel with default settings for any sound: a drum channel for drums, otherwise an instrument. */
-export const createChannel = (id: ChannelId, sound: SoundId): Channel =>
-  isDrumId(sound) ? createDrumChannel(id, sound) : createInstrumentChannel(id, sound);

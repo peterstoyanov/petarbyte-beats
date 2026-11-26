@@ -3,9 +3,9 @@ import { describe, expect, it } from '@jest/globals';
 import { createDrumChannel } from './channels';
 import { DEFAULT_MASTER } from './defaults';
 import { requireChannelId, requirePatternName } from './ids';
+import { SONG_LIMITS } from './limits';
 import { createPattern } from './patterns';
 import { formatDuration, playOrder, songSeconds, stepSeconds, swingOffsetSeconds } from './timing';
-import { SONG_LIMITS } from './limits';
 import type { Song } from './types';
 
 const kick = createDrumChannel(requireChannelId('kick'), 'kick808');

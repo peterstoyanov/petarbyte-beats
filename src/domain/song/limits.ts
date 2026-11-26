@@ -10,18 +10,10 @@ export const BAR_COUNTS = [1, 2, 3, 4, 6, 8] as const;
 
 export type BarCount = (typeof BAR_COUNTS)[number];
 
-export const isBarCount = (bars: number): bars is BarCount =>
-  BAR_COUNTS.some((count) => count === bars);
-
-export const stepCount = (bars: BarCount): number => bars * STEPS_PER_BAR;
-
 export type Range = {
   readonly min: number;
   readonly max: number;
 };
-
-export const isWithin = (value: number, range: Range): boolean =>
-  value >= range.min && value <= range.max;
 
 export const SONG_LIMITS = {
   bpm: { min: 40, max: 240 },
@@ -34,3 +26,11 @@ export const SONG_LIMITS = {
 
 /** How hard a note can be played. */
 export const VELOCITY_RANGE = { min: 0.05, max: 1 } as const satisfies Range;
+
+export const isBarCount = (bars: number): bars is BarCount =>
+  BAR_COUNTS.some((count) => count === bars);
+
+export const stepCount = (bars: BarCount): number => bars * STEPS_PER_BAR;
+
+export const isWithin = (value: number, range: Range): boolean =>
+  value >= range.min && value <= range.max;
