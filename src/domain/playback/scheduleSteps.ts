@@ -54,10 +54,18 @@ export const startPlayhead = (time: number): Playhead => ({ slot: 0, step: 0, ti
 /**
  * The steps due before `until`, from the playhead on. Each call reads the song afresh, so an edit
  * made while the song plays is heard from the next step scheduled, as in the web studio.
+ *
+ * Every step up to `until` is returned, however many that is. After the app has been in the
+ * background the caller should move the playhead up to the audio clock first, or it gets a burst
+ * of late steps.
  */
 export const scheduleSteps = (spec: ScheduleSpec): Schedule => {
   const order = patternsInPlay(spec);
   const stepLength = stepSeconds(spec.song.bpm);
+  // A step that does not move time forward would schedule forever.
+  if (!(Number.isFinite(stepLength) && stepLength > 0)) {
+    throw new RangeError(`A song needs a positive tempo to play, not ${spec.song.bpm} BPM.`);
+  }
   const steps: ScheduledStep[] = [];
 
   let playhead = spec.playhead;

@@ -104,4 +104,9 @@ describe('scheduleSteps', () => {
     );
     expect(clicks).toEqual(['0 bar', '4', '8']);
   });
+
+  it('refuses a tempo that would never move forward', () => {
+    expect(() => schedule({ song: { ...SONG, bpm: -120 } })).toThrow(RangeError);
+    expect(() => schedule({ song: { ...SONG, bpm: 0 } })).toThrow(RangeError);
+  });
 });
