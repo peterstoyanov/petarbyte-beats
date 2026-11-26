@@ -1,4 +1,7 @@
-/** A step is a sixteenth note: four steps make a beat. */
+/** A number of steps, or a step's position counted from 0. A step is a sixteenth note. */
+export type Steps = number;
+
+/** Four steps make a beat. */
 export const STEPS_PER_BEAT = 4;
 
 const BEATS_PER_BAR = 4;
@@ -15,6 +18,14 @@ export type Range = {
   readonly max: number;
 };
 
+type SongLimits = {
+  readonly bpm: Range;
+  readonly swing: Range;
+  readonly maxChannels: number;
+  readonly maxPatterns: number;
+  readonly maxArrangementLength: number;
+};
+
 export const SONG_LIMITS = {
   bpm: { min: 40, max: 240 },
   /** Swing in percent: how late every second step is played. */
@@ -22,7 +33,7 @@ export const SONG_LIMITS = {
   maxChannels: 24,
   maxPatterns: 16,
   maxArrangementLength: 128,
-} as const;
+} as const satisfies SongLimits;
 
 /** How hard a note can be played. */
 export const VELOCITY_RANGE = { min: 0.05, max: 1 } as const satisfies Range;
@@ -30,7 +41,7 @@ export const VELOCITY_RANGE = { min: 0.05, max: 1 } as const satisfies Range;
 export const isBarCount = (bars: number): bars is BarCount =>
   BAR_COUNTS.some((count) => count === bars);
 
-export const stepCount = (bars: BarCount): number => bars * STEPS_PER_BAR;
+export const stepCount = (bars: BarCount): Steps => bars * STEPS_PER_BAR;
 
 export const isWithin = (value: number, range: Range): boolean =>
   value >= range.min && value <= range.max;

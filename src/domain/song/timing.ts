@@ -1,4 +1,4 @@
-import { stepCount, STEPS_PER_BEAT } from './limits';
+import { stepCount, STEPS_PER_BEAT, type Steps } from './limits';
 import type { Pattern, Song } from './types';
 
 const SECONDS_PER_MINUTE = 60;
@@ -34,7 +34,7 @@ export const playOrder = (song: Song, editedPatternIndex = 0): readonly Pattern[
  * How late a step is played because of swing. Only every second step is delayed, by
  * MAX_SWING_DELAY_IN_STEPS at 100%; SONG_LIMITS caps swing at 75%.
  */
-export const swingOffsetSeconds = (song: Pick<Song, 'bpm' | 'swing'>, step: number): number => {
+export const swingOffsetSeconds = (song: Pick<Song, 'bpm' | 'swing'>, step: Steps): number => {
   const isOffbeat = step % STEPS_PER_SWING_PAIR === 1;
   if (!isOffbeat) return 0;
   // Multiplied in this order to give exactly the web studio's timing.

@@ -1,16 +1,16 @@
 import type { MidiNote } from '../music/notes';
 import type { DrumId, InstrumentId } from '../sounds/catalog';
 import type { ChannelId, PatternName } from './ids';
-import type { BarCount } from './limits';
+import type { BarCount, Steps } from './limits';
 
 /** One step of a drum pattern: 0 is a rest, 1 a hit and 2 a loud hit. */
 export type DrumStep = 0 | 1 | 2;
 
 export type Note = {
   /** The step the note starts on, counted from 0 at the start of its pattern. */
-  readonly step: number;
+  readonly step: Steps;
   /** How many steps the note lasts. */
-  readonly length: number;
+  readonly length: Steps;
   readonly midi: MidiNote;
   /** How hard the note is played, see VELOCITY_RANGE. */
   readonly velocity: number;

@@ -1,4 +1,4 @@
-import { STEPS_PER_BAR } from './limits';
+import { STEPS_PER_BAR, type Steps } from './limits';
 import type { DrumStep } from './types';
 
 const BAR_SEPARATOR = '|';
@@ -31,7 +31,7 @@ export const formatDrumSteps = (steps: readonly DrumStep[]): string =>
  * A shorter pattern that fits evenly is repeated, so one bar fills a longer pattern. Any other
  * gap is filled with rests, and steps past `count` are dropped.
  */
-export const fitDrumSteps = (text: string, count: number): DrumStep[] => {
+export const fitDrumSteps = (text: string, count: Steps): DrumStep[] => {
   const symbols = text.replace(IGNORED_CHARACTERS, '');
   const shouldRepeat = symbols.length > 0 && symbols.length < count && count % symbols.length === 0;
   const filled = shouldRepeat ? symbols.repeat(count / symbols.length) : symbols;
