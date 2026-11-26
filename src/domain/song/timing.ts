@@ -4,6 +4,9 @@ import type { Pattern, Song } from './types';
 const SECONDS_PER_MINUTE = 60;
 const PERCENT = 100;
 
+/** Swing pairs the steps up: the first of each pair is on time, the second is played late. */
+const STEPS_PER_SWING_PAIR = 2;
+
 /** The furthest a swung step can move: half a step, at a swing of 100%. */
 const MAX_SWING_DELAY_IN_STEPS = 0.5;
 
@@ -32,7 +35,7 @@ export const playOrder = (song: Song, editedPatternIndex = 0): readonly Pattern[
  * MAX_SWING_DELAY_IN_STEPS at 100%; SONG_LIMITS caps swing at 75%.
  */
 export const swingOffsetSeconds = (song: Pick<Song, 'bpm' | 'swing'>, step: number): number => {
-  const isOffbeat = step % 2 === 1;
+  const isOffbeat = step % STEPS_PER_SWING_PAIR === 1;
   if (!isOffbeat) return 0;
   // Multiplied in this order to give exactly the web studio's timing.
   return (song.swing / PERCENT) * stepSeconds(song.bpm) * MAX_SWING_DELAY_IN_STEPS;
@@ -46,6 +49,6 @@ export const formatDuration = (seconds: number): string => {
   // Rounds before splitting, so 59.6 s reads "1:00" (the web studio shows "0:60").
   const wholeSeconds = Math.round(seconds);
   const minutes = Math.floor(wholeSeconds / SECONDS_PER_MINUTE);
-  const rest = wholeSeconds % SECONDS_PER_MINUTE;
-  return `${minutes}:${String(rest).padStart(2, '0')}`;
+  const remainingSeconds = wholeSeconds % SECONDS_PER_MINUTE;
+  return `${minutes}:${String(remainingSeconds).padStart(2, '0')}`;
 };
