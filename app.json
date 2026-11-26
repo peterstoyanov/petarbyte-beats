@@ -20,6 +20,16 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "react-native-audio-api",
+        {
+          "iosBackgroundMode": false,
+          "androidForegroundService": false,
+          "androidPermissions": []
+        }
+      ]
+    ]
   }
 }
