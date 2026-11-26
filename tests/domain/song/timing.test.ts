@@ -1,12 +1,18 @@
 import { describe, expect, it } from '@jest/globals';
 
-import { createDrumChannel } from './channels';
-import { DEFAULT_MASTER } from './defaults';
-import { requireChannelId, requirePatternName } from './ids';
-import { SONG_LIMITS } from './limits';
-import { createPattern } from './patterns';
-import { formatDuration, playOrder, songSeconds, stepSeconds, swingOffsetSeconds } from './timing';
-import type { Song } from './types';
+import { createDrumChannel } from '@/domain/song/channels';
+import { DEFAULT_MASTER } from '@/domain/song/defaults';
+import { requireChannelId, requirePatternName } from '@/domain/song/ids';
+import { SONG_LIMITS } from '@/domain/song/limits';
+import { createPattern } from '@/domain/song/patterns';
+import {
+  formatDuration,
+  playOrder,
+  songSeconds,
+  stepSeconds,
+  swingOffsetSeconds,
+} from '@/domain/song/timing';
+import type { Song } from '@/domain/song/types';
 
 const kick = createDrumChannel(requireChannelId('kick'), 'kick808');
 const intro = createPattern({ name: requirePatternName('intro'), bars: 1, channels: [kick] });

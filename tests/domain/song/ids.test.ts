@@ -7,7 +7,7 @@ import {
   parsePatternName,
   requireChannelId,
   requirePatternName,
-} from './ids';
+} from '@/domain/song/ids';
 
 describe('isCodeName', () => {
   it.each(['kick', 'hat2', '_fx', 'Intro', 'bass_line'])('accepts %p', (text) => {

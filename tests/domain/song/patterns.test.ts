@@ -1,8 +1,8 @@
 import { describe, expect, it } from '@jest/globals';
 
-import { createDrumChannel, createInstrumentChannel } from './channels';
-import { requireChannelId, requirePatternName } from './ids';
-import { createPattern, emptyHits } from './patterns';
+import { createDrumChannel, createInstrumentChannel } from '@/domain/song/channels';
+import { requireChannelId, requirePatternName } from '@/domain/song/ids';
+import { createPattern, emptyHits } from '@/domain/song/patterns';
 
 describe('emptyHits', () => {
   it('is all rests, one per step', () => {

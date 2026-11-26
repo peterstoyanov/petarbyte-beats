@@ -33,8 +33,10 @@ Each commit should do one thing and leave the project in a working state.
 
 ## Tests
 
-Tests live next to the code they cover, named `<file>.test.ts` or `<file>.test.tsx`. Import the
-test APIs explicitly from `@jest/globals`.
+Tests live in `tests/`, in the same folder structure as the code they cover:
+`src/domain/song/timing.ts` is tested by `tests/domain/song/timing.test.ts`. Import the code under
+test through the `@/` alias (`@/domain/song/timing`) and the test APIs explicitly from
+`@jest/globals`.
 
 Before opening a pull request, run:
 

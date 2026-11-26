@@ -8,7 +8,7 @@ import {
   SOUND_GROUPS,
   soundGroup,
   soundLabel,
-} from './catalog';
+} from '@/domain/sounds/catalog';
 
 const drumIds = Object.keys(DRUMS);
 const instrumentEntries = Object.entries(INSTRUMENTS);

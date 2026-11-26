@@ -1,9 +1,9 @@
 import { describe, expect, it } from '@jest/globals';
 
-import { INSTRUMENTS } from '../sounds/catalog';
-import { createChannel, createDrumChannel, createInstrumentChannel } from './channels';
-import { DEFAULT_MIXER } from './defaults';
-import { requireChannelId } from './ids';
+import { createChannel, createDrumChannel, createInstrumentChannel } from '@/domain/song/channels';
+import { DEFAULT_MIXER } from '@/domain/song/defaults';
+import { requireChannelId } from '@/domain/song/ids';
+import { INSTRUMENTS } from '@/domain/sounds/catalog';
 
 describe('createDrumChannel', () => {
   it('starts with the default mixer, pitch and decay', () => {
