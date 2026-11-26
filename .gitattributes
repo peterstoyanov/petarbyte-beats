@@ -1,0 +1,2 @@
+# Golden files are compared character by character, so keep their line endings as they are.
+*.cs text eol=lf
