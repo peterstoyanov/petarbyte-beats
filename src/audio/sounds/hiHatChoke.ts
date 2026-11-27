@@ -10,10 +10,13 @@ const CHOKE_TIME_CONSTANT = 0.01;
 export class HiHatChoke {
   private ringing: GainNode | undefined;
 
-  /** Cuts off the open hat that is ringing, if any. */
+  /**
+   * Cuts off the open hat that is ringing, if any, from the level it has fallen to by then. The
+   * web studio cancels its fall instead, so there the hat jumps back up for a moment first.
+   */
   choke(time: number): void {
     if (this.ringing === undefined) return;
-    this.ringing.gain.cancelScheduledValues(time);
+    this.ringing.gain.cancelAndHoldAtTime(time);
     this.ringing.gain.setTargetAtTime(0, time, CHOKE_TIME_CONSTANT);
     this.ringing = undefined;
   }
