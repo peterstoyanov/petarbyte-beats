@@ -7,7 +7,7 @@ import {
   type ScheduledStep,
   type ScheduleSpec,
 } from '@/domain/playback/scheduleSteps';
-import type { Song } from '@/domain/song/types';
+import type { DrumChannel, Song } from '@/domain/song/types';
 
 import { MixingDesk } from '../mixingDesk';
 import { PianoSampler } from '../piano/pianoSampler';
@@ -20,6 +20,8 @@ const LOOKAHEAD_SECONDS = 0.12;
 const TICK_MS = 25;
 /** The first step plays a moment after Play, so it is never already late. */
 const START_DELAY_SECONDS = 0.06;
+/** A drum tried out by tapping it sounds this soon, as in the web studio. */
+const AUDITION_DELAY_SECONDS = 0.01;
 
 /** What to play and how; it can change while the song plays. */
 export type PlaybackSettings = Pick<
@@ -29,6 +31,13 @@ export type PlaybackSettings = Pick<
 
 /** How a call to play ended: playing, playing with a silent piano, or stopped before it began. */
 export type PlayOutcome = 'playing' | 'playing-without-piano' | 'stopped';
+
+/** A drum to hear once, as when a step is tapped, through its channel of the song. */
+export type Audition = {
+  readonly song: Song;
+  readonly channel: DrumChannel;
+  readonly velocity: number;
+};
 
 type SongPlayerSpec = {
   readonly context: AudioContext;
@@ -97,6 +106,22 @@ export class SongPlayer {
       this.applyMix(settings.song);
     }
     this.settings = settings;
+  }
+
+  /**
+   * Plays one drum hit at once, through its channel's settings, so a tap on a step can be heard.
+   * While the song plays, the desk already follows its edits; otherwise it is set from this song.
+   */
+  async audition({ song, channel, velocity }: Audition): Promise<void> {
+    if (this.isDisposed) throw new Error('This player has been disposed of.');
+    if (this.context.state === 'suspended') await this.context.resume();
+    if (!this.isPlaying) this.applyMix(song);
+    playEvent({
+      instruments: this.instruments,
+      event: { kind: 'hit', channel, velocity },
+      time: this.context.currentTime + AUDITION_DELAY_SECONDS,
+      bpm: song.bpm,
+    });
   }
 
   stop(): void {
