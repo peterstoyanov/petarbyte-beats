@@ -13,7 +13,7 @@ import type {
 export const DEFAULT_Q = 0.7;
 
 /** An exponential ramp cannot reach zero, so sounds fall to this level, which is silent. */
-const SILENCE = 0.0005;
+export const SILENCE = 0.0005;
 
 const DEFAULT_ATTACK_SECONDS = 0.001;
 
