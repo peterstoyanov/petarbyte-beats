@@ -5,14 +5,16 @@ import { gainNode } from '@/audio/nodes';
 import { HiHatChoke } from '@/audio/sounds/hiHatChoke';
 
 describe('HiHatChoke', () => {
-  it('cuts off the open hat that is ringing', () => {
+  it('cuts off the open hat from the level it has fallen to', () => {
     const openHat = gainNode(new AudioContext());
+    const hold = jest.spyOn(openHat.gain, 'cancelAndHoldAtTime');
     const fade = jest.spyOn(openHat.gain, 'setTargetAtTime');
     const choke = new HiHatChoke();
 
     choke.ring(openHat);
     choke.choke(2);
 
+    expect(hold).toHaveBeenCalledWith(2);
     expect(fade).toHaveBeenCalledWith(0, 2, 0.01);
   });
 

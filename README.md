@@ -69,6 +69,10 @@ The app mirrors the web studio. Where it differs, it is on purpose:
 - **The sidechain duck starts from where the last one has got to.** The web studio reads the level
   when it schedules a kick, a little ahead of time, so a kick that lands while the last duck is
   still swelling back can click there.
+- **Long noise never runs out.** The noise behind snares, hats and the riser loops, so a long
+  sound such as the riser at a high decay plays to its end. In the web studio it can stop early.
+- **A choked open hat fades from where it is.** The web studio cancels the hat's fall, so it jumps
+  back up for a moment before it is cut off.
 - **Durations round before they are split**, so 59.6 seconds reads 1:00, not 0:60.
 
 ## Quality and security

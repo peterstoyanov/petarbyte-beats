@@ -5,7 +5,7 @@ import { gainNode, scheduledOscillator } from '../nodes';
 /** The 808's cymbal ratios: six square waves out of tune with each other, so they ring metallic. */
 const CYMBAL_RATIOS = [2, 3, 4.16, 5.43, 6.79, 8.21] as const;
 const DEFAULT_BASE_HZ = 40;
-const LEVEL = 0.18;
+const SUM_LEVEL = 0.18;
 
 type MetalSpec = {
   readonly start: number;
@@ -19,7 +19,7 @@ export const metal = (
   context: BaseAudioContext,
   { start, stop, baseHz = DEFAULT_BASE_HZ, ratios = CYMBAL_RATIOS }: MetalSpec,
 ): GainNode => {
-  const sum = gainNode(context, LEVEL);
+  const sum = gainNode(context, SUM_LEVEL);
   for (const ratio of ratios) {
     const frequency = baseHz * ratio;
     scheduledOscillator(context, { type: 'square', frequency, start, stop }).connect(sum);

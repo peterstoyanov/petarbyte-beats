@@ -1,24 +1,21 @@
-import type { AudioNode, BaseAudioContext } from 'react-native-audio-api';
-
 import type { DrumHit } from '@/domain/playback/stepEvents';
 import type { DrumId } from '@/domain/sounds/catalog';
 
-import type { HiHatChoke } from '../hiHatChoke';
+import { crash, hat808, hat909, openhat808, openhat909, ride, tamb, triangle } from './cymbals';
+import type { DrumHitSpec, DrumRecipe } from './drumRecipe';
+import { kick808, kick909, kickhard, kicklofi } from './kicks';
 import {
-  cowbell,
   block,
   bongo,
   claves,
   conga,
+  cowbell,
   shaker,
   sweep,
   tomhi,
   tomlo,
   zap,
 } from './percussion';
-import { crash, hat808, hat909, openhat808, openhat909, ride, tamb, triangle } from './cymbals';
-import type { DrumRecipe } from './drumRecipe';
-import { kick808, kick909, kickhard, kicklofi } from './kicks';
 import { clap, rim, snap, snare808, snare909 } from './snares';
 
 const SEMITONES_PER_OCTAVE = 12;
@@ -54,13 +51,8 @@ export const DRUM_RECIPES = {
   sweep,
 } as const satisfies Record<DrumId, DrumRecipe>;
 
-type PlayDrumSpec = {
-  readonly context: BaseAudioContext;
+type PlayDrumSpec = Pick<DrumHitSpec, 'context' | 'output' | 'time' | 'hiHatChoke'> & {
   readonly hit: DrumHit;
-  readonly time: number;
-  /** The channel's strip on the desk. */
-  readonly output: AudioNode;
-  readonly hiHatChoke: HiHatChoke;
 };
 
 /** Plays a drum hit, tuned and shortened by its channel's pitch and decay. */

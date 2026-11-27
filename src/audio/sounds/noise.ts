@@ -2,7 +2,7 @@ import type { AudioBuffer, AudioBufferSourceNode, BaseAudioContext } from 'react
 
 const NOISE_SECONDS = 2;
 /** Each burst starts somewhere in the noise, so no two hits sound exactly alike. */
-const LATEST_START_SECONDS = 1.2;
+const LATEST_OFFSET_SECONDS = 1.2;
 /** Bursts play a little past their length, so their envelope ends before the sound does. */
 const TAIL_SECONDS = 0.05;
 
@@ -13,19 +13,24 @@ type NoiseBurstSpec = {
   readonly seconds: number;
 };
 
-/** A burst of white noise, already set to start and stop; the raw sound of snares and hats. */
+/**
+ * A burst of white noise, already set to start and stop; the raw sound of snares and hats. The
+ * noise loops, so a long burst, such as a riser at a high decay, never runs out before it ends.
+ * The web studio does not loop it, so there its long bursts can stop early.
+ */
 export const noiseBurst = (
   context: BaseAudioContext,
   { start, seconds }: NoiseBurstSpec,
 ): AudioBufferSourceNode => {
   const source = context.createBufferSource();
   source.buffer = whiteNoise(context);
-  source.start(start, Math.random() * LATEST_START_SECONDS);
+  source.loop = true;
+  source.start(start, Math.random() * LATEST_OFFSET_SECONDS);
   source.stop(start + seconds + TAIL_SECONDS);
   return source;
 };
 
-/** Two seconds of noise, made once per context and shared by every burst. */
+/** Noise made once per context and shared by every burst. */
 const whiteNoise = (context: BaseAudioContext): AudioBuffer => {
   const cached = noiseByContext.get(context);
   if (cached !== undefined) return cached;

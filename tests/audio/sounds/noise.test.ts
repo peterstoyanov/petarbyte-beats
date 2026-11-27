@@ -17,3 +17,15 @@ describe('noiseBurst', () => {
     expect(noiseBurst(context, { start: 0, seconds: 0.1 }).buffer?.duration).toBe(2);
   });
 });
+
+describe('noiseBurst, over a long sound', () => {
+  it('loops the noise, so a long burst never runs out', () => {
+    expect(noiseBurst(new AudioContext(), { start: 0, seconds: 4.8 }).loop).toBe(true);
+  });
+
+  it('keeps one noise buffer for each context', () => {
+    const first = noiseBurst(new AudioContext(), { start: 0, seconds: 0.1 });
+    const second = noiseBurst(new AudioContext(), { start: 0, seconds: 0.1 });
+    expect(second.buffer).not.toBe(first.buffer);
+  });
+});

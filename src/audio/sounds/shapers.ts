@@ -1,6 +1,7 @@
 import type { BaseAudioContext, WaveShaperNode } from 'react-native-audio-api';
 
 type SaturationSpec = {
+  /** How many points the curve has, at least 2. */
   readonly points: number;
   /** How hard the signal is pushed into the curve: higher is dirtier. */
   readonly drive: number;
