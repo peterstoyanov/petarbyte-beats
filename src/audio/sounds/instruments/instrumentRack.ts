@@ -1,6 +1,8 @@
 import type { NoteStart } from '@/domain/playback/stepEvents';
 import type { InstrumentId } from '@/domain/sounds/catalog';
 
+import type { PianoSampler } from '../../piano/pianoSampler';
+
 import { acid, bass808, reese, sub, synthbass, wobble } from './bass';
 import type { InstrumentRecipe, NoteSpec } from './instrumentRecipe';
 import { bell, clav, epiano, organ } from './keys';
@@ -45,17 +47,32 @@ export const INSTRUMENT_RECIPES = {
   sawlead,
 } as const satisfies Record<SynthesizedInstrumentId, InstrumentRecipe>;
 
+/** The piano's damper lets part of the channel's release ring on after the key. */
+const PIANO_RELEASE_SHARE = 0.4;
+/** The recordings are loud; this matches them to the synthesized instruments. */
+const PIANO_LEVEL = 0.95;
+
 type PlayNoteSpec = Pick<NoteSpec, 'context' | 'output' | 'time' | 'bpm'> & {
   readonly note: NoteStart;
+  readonly piano: PianoSampler;
 };
 
 /**
  * Plays a note on its channel's instrument, with the channel's release and resonance. The grand
- * piano is silent here: it plays recordings, which come with the piano sampler.
+ * piano plays its recordings, and stays silent until they are loaded, as in the web studio.
  */
-export const playNoteStart = ({ context, output, time, bpm, note }: PlayNoteSpec): void => {
+export const playNoteStart = ({ context, output, time, bpm, note, piano }: PlayNoteSpec): void => {
   const { channel, midi, velocity, seconds } = note;
-  if (channel.sound === 'piano') return;
+  if (channel.sound === 'piano') {
+    piano.play({
+      output,
+      midi,
+      time,
+      seconds: seconds + channel.releaseSeconds * PIANO_RELEASE_SHARE,
+      velocity: velocity * PIANO_LEVEL,
+    });
+    return;
+  }
   INSTRUMENT_RECIPES[channel.sound]({
     context,
     output,

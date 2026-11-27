@@ -6,6 +6,7 @@ import {
   playNoteStart,
   type SynthesizedInstrumentId,
 } from '@/audio/sounds/instruments/instrumentRack';
+import { PianoSampler } from '@/audio/piano/pianoSampler';
 import { createInstrumentChannel } from '@/domain/song/channels';
 import { requireChannelId } from '@/domain/song/ids';
 import { SONG_LIMITS, VELOCITY_RANGE } from '@/domain/song/limits';
@@ -13,7 +14,7 @@ import { INSTRUMENTS } from '@/domain/sounds/catalog';
 
 import { recordSounds } from '../../support/recordedSounds';
 
-const instrumentIds = Object.keys(INSTRUMENT_RECIPES).filter(
+const instrumentIds = Object.keys(INSTRUMENTS).filter(
   (id): id is SynthesizedInstrumentId => id in INSTRUMENT_RECIPES,
 );
 
@@ -50,11 +51,16 @@ const recordInstrument = (id: SynthesizedInstrumentId) => {
   return recorded;
 };
 
-/** Plays one note on a channel with the given instrument and resonance. */
+type PlayOptions = {
+  readonly resonance?: number;
+  readonly piano?: PianoSampler;
+};
+
+/** Plays one note on a channel with the given instrument. */
 const playNote = (
   context: AudioContext,
   sound: 'piano' | SynthesizedInstrumentId,
-  resonance = 0,
+  { resonance = 0, piano = new PianoSampler(context) }: PlayOptions = {},
 ) => {
   const base = createInstrumentChannel(requireChannelId('lead'), sound);
   const channel = { ...base, mixer: { ...base.mixer, resonance } };
@@ -64,6 +70,7 @@ const playNote = (
     time: 0,
     bpm: 120,
     note: { kind: 'note', channel, midi: 48, velocity: 0.8, seconds: 0.5 },
+    piano,
   });
 };
 
@@ -95,15 +102,21 @@ describe('playNoteStart', () => {
       return filter;
     });
 
-    playNote(context, 'acid', 0.5);
+    playNote(context, 'acid', { resonance: 0.5 });
 
     expect(filters[0]?.Q.value).toBe(15);
   });
 
-  it('leaves the grand piano to its recordings', () => {
+  it('plays the grand piano from its recordings, a little longer and softer', () => {
     const context = new AudioContext();
-    const { sources } = recordSounds(context);
-    playNote(context, 'piano');
-    expect(sources).toHaveLength(0);
+    const piano = new PianoSampler(context);
+    const play = jest.spyOn(piano, 'play').mockReturnValue();
+
+    playNote(context, 'piano', { piano });
+
+    const release = INSTRUMENTS.piano.releaseSeconds;
+    expect(play).toHaveBeenCalledWith(
+      expect.objectContaining({ midi: 48, seconds: 0.5 + release * 0.4, velocity: 0.8 * 0.95 }),
+    );
   });
 });
