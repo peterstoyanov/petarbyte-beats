@@ -26,6 +26,7 @@ export const hat808: DrumRecipe = ({
   hiHatChoke.choke(time);
 };
 
+/** The 808's open hat: the same metal, ringing until the next hat chokes it. */
 export const openhat808: DrumRecipe = ({
   context,
   output,
@@ -72,6 +73,7 @@ export const hat909: DrumRecipe = ({
   hiHatChoke.choke(time);
 };
 
+/** The 909's open hat: longer noise, ringing until the next hat chokes it. */
 export const openhat909: DrumRecipe = ({
   context,
   output,
@@ -99,7 +101,7 @@ export const openhat909: DrumRecipe = ({
 export const crash: DrumRecipe = ({ context, output, time, velocity, pitch, decay }) => {
   const length = 1.7 * decay;
   const level = gainNode(context, 0);
-  const mix = gainNode(context, 1);
+  const mix = gainNode(context);
   metal(context, {
     start: time,
     stop: time + length + 0.1,
