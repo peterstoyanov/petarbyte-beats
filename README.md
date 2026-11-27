@@ -75,6 +75,8 @@ The app mirrors the web studio. Where it differs, it is on purpose:
   sound such as the riser at a high decay plays to its end. In the web studio it can stop early.
 - **A choked open hat fades from where it is.** The web studio cancels the hat's fall, so it jumps
   back up for a moment before it is cut off.
+- **A bell rings out before it stops.** The web studio stops every bell note after 2.6 seconds,
+  which cuts off a bell with a long release while it can still be heard.
 - **Durations round before they are split**, so 59.6 seconds reads 1:00, not 0:60.
 
 ## Quality and security
