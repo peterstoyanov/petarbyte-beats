@@ -1,9 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, jest } from '@jest/globals';
 import { AudioContext } from 'react-native-audio-api';
 
+import { MixingDesk } from '@/audio/mixingDesk';
 import { SongPlayer, type PlaybackSettings } from '@/audio/player/songPlayer';
 import { parseSongCode } from '@/domain/csharp/parseSongCode';
-import type { Song } from '@/domain/song/types';
+import type { DrumChannel, Song } from '@/domain/song/types';
 
 const songFrom = (...lines: string[]): Song => {
   const result = parseSongCode(lines.join('\n'));
@@ -138,6 +139,67 @@ describe('SongPlayer', () => {
     const resume = jest.spyOn(context, 'resume');
     await player.play(settingsFor(KICKS));
     expect(resume).toHaveBeenCalled();
+  });
+});
+
+describe('SongPlayer auditions', () => {
+  const kickOf = (song: Song): DrumChannel => {
+    const [kick] = song.channels;
+    if (kick?.kind !== 'drum') throw new Error('The song has no drum channel first.');
+    return kick;
+  };
+  const audition = { song: KICKS, channel: kickOf(KICKS), velocity: 0.75 };
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  /** The times the context's noise bursts were told to start. */
+  const watchStarts = (context: AudioContext): number[] => {
+    const starts: number[] = [];
+    // The clock's own spy already wraps createBufferSource, so the sources' shared start is watched.
+    const sourcePrototype: { start: (when?: number) => void } = Object.getPrototypeOf(
+      context.createBufferSource(),
+    );
+    jest.spyOn(sourcePrototype, 'start').mockImplementation((when = 0) => {
+      starts.push(when);
+    });
+    return starts;
+  };
+
+  it('plays the drum once, a moment from now', async () => {
+    const { context, player, advanceTo } = playerOnClock();
+    const starts = watchStarts(context);
+    advanceTo(2);
+    await player.audition(audition);
+    expect(starts).toEqual([2.01]);
+    expect(player.isPlaying).toBe(false);
+  });
+
+  it("sets the desk from the song when nothing plays, and leaves it to playback's edits otherwise", async () => {
+    const { player } = playerOnClock();
+    const applySong = jest.spyOn(MixingDesk.prototype, 'applySong');
+    await player.audition(audition);
+    expect(applySong).toHaveBeenCalledTimes(1);
+
+    await player.play(settingsFor(KICKS));
+    applySong.mockClear();
+    await player.audition(audition);
+    expect(applySong).not.toHaveBeenCalled();
+  });
+
+  it('wakes a suspended context first', async () => {
+    const { context, player } = playerOnClock();
+    jest.spyOn(context, 'state', 'get').mockReturnValue('suspended');
+    const resume = jest.spyOn(context, 'resume');
+    await player.audition(audition);
+    expect(resume).toHaveBeenCalled();
+  });
+
+  it('refuses once disposed of', async () => {
+    const { player } = playerOnClock();
+    player.dispose();
+    await expect(player.audition(audition)).rejects.toThrow('disposed');
   });
 });
 

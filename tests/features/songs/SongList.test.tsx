@@ -11,12 +11,13 @@ import { SongList } from '@/features/songs/SongList';
 const renderSongList = async (outcome: PlayOutcome = 'playing') => {
   const play = jest.spyOn(SongPlayer.prototype, 'play').mockResolvedValue(outcome);
   const stop = jest.spyOn(SongPlayer.prototype, 'stop');
+  const onOpen = jest.fn();
   const view = await render(
     <PlayerProvider>
-      <SongList />
+      <SongList onOpen={onOpen} />
     </PlayerProvider>,
   );
-  return { play, stop, view };
+  return { play, stop, onOpen, view };
 };
 
 const tap = (label: string) => fireEvent.press(screen.getByLabelText(label));
@@ -46,12 +47,29 @@ describe('SongList', () => {
     ).toBeOnTheScreen();
   });
 
-  it('plays a song when it is tapped, through its arrangement', async () => {
+  it('plays a song when its Play button is tapped, through its arrangement', async () => {
     const { play } = await renderSongList();
     await tap('Play Neon Rooftop');
 
     expect(play).toHaveBeenCalledWith(expect.objectContaining({ mode: 'song' }));
     expect(await screen.findByLabelText('Stop Neon Rooftop')).toBeOnTheScreen();
+  });
+
+  it('opens a song in the studio when its title is tapped', async () => {
+    const { onOpen } = await renderSongList();
+    await tap('Open Neon Rooftop');
+    expect(onOpen).toHaveBeenCalledWith(expect.objectContaining({ title: 'Neon Rooftop' }));
+  });
+
+  it('stops the song playing here when one is opened, and starts no audio otherwise', async () => {
+    const { stop } = await renderSongList();
+    await tap('Open Golden Hour');
+    expect(stop).not.toHaveBeenCalled();
+
+    await tap('Play Neon Rooftop');
+    await tap('Open Golden Hour');
+    expect(stop).toHaveBeenCalled();
+    expect(screen.getByLabelText('Play Neon Rooftop')).toBeOnTheScreen();
   });
 
   it('stops the song when it is tapped again', async () => {
@@ -118,7 +136,7 @@ describe('SongList with the real player', () => {
     });
     await render(
       <PlayerProvider>
-        <SongList />
+        <SongList onOpen={() => {}} />
       </PlayerProvider>,
     );
     await tap('Play Neon Rooftop');
@@ -133,7 +151,7 @@ describe('SongList with the real player', () => {
     jest.spyOn(SongPlayer.prototype, 'play').mockResolvedValue('playing');
     const view = await render(
       <PlayerProvider>
-        <SongList />
+        <SongList onOpen={() => {}} />
       </PlayerProvider>,
     );
     await tap('Play Neon Rooftop');

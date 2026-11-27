@@ -14,4 +14,6 @@ export const MIN_TOUCH_TARGET = 44;
 /** Corner radii. */
 export const radius = {
   card: 12,
+  /** A step of the channel rack. */
+  step: 6,
 } as const;

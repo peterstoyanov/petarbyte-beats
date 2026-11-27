@@ -20,17 +20,40 @@ const SECTIONS: readonly SongSection[] = PRESET_GROUPS.map((group) => ({
   data: presetsIn(group.id),
 }));
 
-/** The built-in songs in the sections of the web studio's menu; tap one to play or stop it. */
-export const SongList: FC = () => {
+type SongListProps = {
+  /** Opens a song in the studio. */
+  readonly onOpen: (preset: Preset) => void;
+};
+
+/**
+ * The built-in songs in the sections of the web studio's menu: open one in the studio, or play it
+ * here first. Opening a song stops the one playing here.
+ */
+export const SongList: FC<SongListProps> = ({ onOpen }) => {
   const { playingId, notice, play, stop } = useSongPlayback();
+
+  const open = useCallback(
+    (preset: Preset) => {
+      // Stopping only what plays keeps the audio off until something is heard.
+      if (playingId !== undefined) stop();
+      onOpen(preset);
+    },
+    [playingId, stop, onOpen],
+  );
 
   const renderSong: SectionListRenderItem<Preset, SongSection> = useCallback(
     ({ item }) => {
       return (
-        <SongRow preset={item} isPlaying={item.id === playingId} onPlay={play} onStop={stop} />
+        <SongRow
+          preset={item}
+          isPlaying={item.id === playingId}
+          onOpen={open}
+          onPlay={play}
+          onStop={stop}
+        />
       );
     },
-    [playingId, play, stop],
+    [playingId, open, play, stop],
   );
 
   return (

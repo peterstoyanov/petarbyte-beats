@@ -6,7 +6,7 @@ import { colors } from '@/theme/colors';
 import { MIN_TOUCH_TARGET, radius, spacing } from '@/theme/spacing';
 import { fontWeight, typography } from '@/theme/typography';
 
-/** iOS shows a press by shrinking the row a little; Android uses its ripple instead. */
+/** iOS shows a press by shrinking what is pressed a little; Android uses its ripple instead. */
 const PRESSED_SCALE = 0.96;
 const IS_IOS = Platform.OS === 'ios';
 const RIPPLE = { color: colors.ripple, foreground: true } as const;
@@ -14,26 +14,39 @@ const RIPPLE = { color: colors.ripple, foreground: true } as const;
 type SongRowProps = {
   readonly preset: Preset;
   readonly isPlaying: boolean;
+  readonly onOpen: (preset: Preset) => void;
   readonly onPlay: (preset: Preset) => void;
   readonly onStop: () => void;
 };
 
-/** One song: its title and what to listen for, and whether it is playing. Tap to play or stop. */
-export const SongRow: FC<SongRowProps> = memo(({ preset, isPlaying, onPlay, onStop }) => {
+/**
+ * One song: tap its title to open it in the studio, or its Play button to listen first. The two
+ * are side by side, not nested, so screen readers reach both.
+ */
+export const SongRow: FC<SongRowProps> = memo(({ preset, isPlaying, onOpen, onPlay, onStop }) => {
   return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={`${isPlaying ? 'Stop' : 'Play'} ${preset.title}`}
-      android_ripple={RIPPLE}
-      onPress={() => (isPlaying ? onStop() : onPlay(preset))}
-      style={({ pressed }) => [styles.row, IS_IOS && pressed && styles.pressed]}
-    >
-      <View style={styles.text}>
+    <View style={styles.row}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={`Open ${preset.title}`}
+        accessibilityHint={preset.note}
+        android_ripple={RIPPLE}
+        onPress={() => onOpen(preset)}
+        style={({ pressed }) => [styles.open, IS_IOS && pressed && styles.pressed]}
+      >
         <Text style={styles.title}>{preset.title}</Text>
         <Text style={styles.note}>{preset.note}</Text>
-      </View>
-      <Text style={styles.action}>{isPlaying ? 'Stop' : 'Play'}</Text>
-    </Pressable>
+      </Pressable>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={`${isPlaying ? 'Stop' : 'Play'} ${preset.title}`}
+        android_ripple={RIPPLE}
+        onPress={() => (isPlaying ? onStop() : onPlay(preset))}
+        style={({ pressed }) => [styles.listen, IS_IOS && pressed && styles.pressed]}
+      >
+        <Text style={styles.action}>{isPlaying ? 'Stop' : 'Play'}</Text>
+      </Pressable>
+    </View>
   );
 });
 SongRow.displayName = 'SongRow';
@@ -42,10 +55,7 @@ const styles = StyleSheet.create({
   row: {
     minHeight: MIN_TOUCH_TARGET,
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
+    alignItems: 'stretch',
     borderRadius: radius.card,
     borderCurve: 'continuous',
     overflow: 'hidden',
@@ -54,9 +64,19 @@ const styles = StyleSheet.create({
   pressed: {
     transform: [{ scale: PRESSED_SCALE }],
   },
-  text: {
+  open: {
     flex: 1,
+    justifyContent: 'center',
     gap: spacing.xs,
+    paddingLeft: spacing.lg,
+    paddingRight: spacing.sm,
+    paddingVertical: spacing.md,
+  },
+  listen: {
+    minWidth: MIN_TOUCH_TARGET,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: spacing.lg,
   },
   title: {
     ...typography.body,
