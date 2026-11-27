@@ -4,7 +4,7 @@ import {
   type ChannelId,
   type PatternName,
 } from '../../song/ids';
-import { SONG_VARIABLE } from '../vocabulary';
+import { takenNames } from '../names';
 import { DEFAULT_MASTER, DEFAULT_SONG_SETTINGS } from '../../song/defaults';
 import { type BarCount } from '../../song/limits';
 import { emptyHits } from '../../song/patterns';
@@ -75,11 +75,11 @@ export const findChannel = (draft: SongDraft, name: string): DraftChannel | unde
 export const findPattern = (draft: SongDraft, name: string): DraftPattern | undefined =>
   draft.patterns.find((pattern) => pattern.name === name);
 
-/** Channels, patterns and the song itself share one set of names in the code. */
 export const isNameTaken = (draft: SongDraft, name: string): boolean =>
-  name === SONG_VARIABLE ||
-  findChannel(draft, name) !== undefined ||
-  findPattern(draft, name) !== undefined;
+  takenNames({
+    channelIds: draft.channels.keys(),
+    patternNames: draft.patterns.map((pattern) => pattern.name),
+  }).has(name);
 
 /**
  * The finished song, from a draft with at least one pattern. Every pattern gets an empty track for
