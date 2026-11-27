@@ -2,10 +2,11 @@
   "expo": {
     "name": "PetarByte Beats",
     "slug": "petarbyte-beats",
+    "scheme": "petarbytebeats",
     "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "net.pstoyanov.beats"
@@ -38,7 +39,8 @@
           "androidForegroundService": false,
           "androidPermissions": []
         }
-      ]
+      ],
+      "expo-router"
     ]
   }
 }
