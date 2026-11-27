@@ -19,7 +19,13 @@
       },
       "predictiveBackGestureEnabled": false,
       "permissions": [],
-      "package": "net.pstoyanov.beats"
+      "package": "net.pstoyanov.beats",
+      "blockedPermissions": [
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.SYSTEM_ALERT_WINDOW",
+        "android.permission.VIBRATE"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
