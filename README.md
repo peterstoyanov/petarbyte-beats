@@ -41,7 +41,7 @@ Go. The first run builds it and installs it on a connected device or emulator:
 
 ```bash
 npm install
-npx expo run:android   # or: npx expo run:ios
+npm run android   # or: npm run ios
 ```
 
 After that, `npm start` is enough until a native dependency changes.
@@ -51,6 +51,8 @@ After that, `npm start` is enough until a native dependency changes.
 | Command                | What it does                           |
 | ---------------------- | -------------------------------------- |
 | `npm start`            | Start the Expo dev server              |
+| `npm run android`      | Build and run the app on Android       |
+| `npm run ios`          | Build and run the app on iOS           |
 | `npm test`             | Run the test suite                     |
 | `npm run typecheck`    | Type-check the project with TypeScript |
 | `npm run lint`         | Lint with ESLint                       |
