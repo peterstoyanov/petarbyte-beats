@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { AccessibilityInfo } from 'react-native';
 
 import type { PlaybackSettings } from '@/audio/player/songPlayer';
 import { usePlayer } from '@/audio/player/PlayerProvider';
 import type { Song } from '@/domain/song/types';
+import { useNotice } from '@/features/notice/useNotice';
 import type { Preset } from '@/presets/catalog';
 import { openPreset } from '@/presets/openPreset';
 
@@ -24,15 +24,9 @@ export type SongPlayback = {
 export const useSongPlayback = (): SongPlayback => {
   const { getPlayer, listenForErrors } = usePlayer();
   const [playingId, setPlayingId] = useState<string | undefined>(undefined);
-  const [notice, setNotice] = useState<string | undefined>(undefined);
+  const { notice, tell, clear } = useNotice();
   /** The song asked for last, so the answer to an earlier request cannot override it. */
   const latestRequest = useRef<string | undefined>(undefined);
-
-  /** Shows a message, and reads it out to screen reader users as it appears. */
-  const tell = useCallback((message: string) => {
-    setNotice(message);
-    AccessibilityInfo.announceForAccessibility(message);
-  }, []);
 
   const fail = useCallback(() => {
     latestRequest.current = undefined;
@@ -46,7 +40,7 @@ export const useSongPlayback = (): SongPlayback => {
     (preset: Preset) => {
       latestRequest.current = preset.id;
       setPlayingId(preset.id);
-      setNotice(undefined);
+      clear();
       const isLatest = () => latestRequest.current === preset.id;
 
       // Starting inside a promise turns an error in making the player into a failed play.
@@ -61,15 +55,15 @@ export const useSongPlayback = (): SongPlayback => {
           },
         );
     },
-    [getPlayer, fail, tell],
+    [getPlayer, fail, tell, clear],
   );
 
   const stop = useCallback(() => {
     latestRequest.current = undefined;
     getPlayer().stop();
     setPlayingId(undefined);
-    setNotice(undefined);
-  }, [getPlayer]);
+    clear();
+  }, [getPlayer, clear]);
 
   return { playingId, notice, play, stop };
 };
