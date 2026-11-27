@@ -13,7 +13,7 @@ in-browser studio on pstoyanov.net.
 
 - [x] Song model, read from and written as C# code exactly as the web studio does
 - [ ] Two-way sync between the grid and the code
-- [ ] Audio engine: synthesized drums and instruments, sampled grand piano
+- [x] Sound engine: synthesized drums and instruments, sampled grand piano, and the mixer
 - [ ] Channel rack and step sequencer with swing
 - [ ] Piano roll with scales, chords and velocity
 - [ ] Mixer: volume, pan, reverb, delay, filter and sidechain
@@ -99,6 +99,13 @@ They are licensed under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-n
 share and adapt for non-commercial use with credit, and commercial use needs the author's written
 permission. Each folder with such content has a `LICENSE.md`. The classical pieces are
 public-domain compositions.
+
+## Credits
+
+The grand piano plays recordings from the
+[Salamander Grand Piano](https://freepats.zenvoid.org/Piano/acoustic-grand-piano.html) by
+Alexander Holm, licensed under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/). See
+[`assets/audio/piano/LICENSE.md`](./assets/audio/piano/LICENSE.md) for the changes made.
 
 ## Author
 

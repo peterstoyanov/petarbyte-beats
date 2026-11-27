@@ -45,6 +45,7 @@
   "jest": {
     "preset": "jest-expo",
     "moduleNameMapper": {
+      "\\.mp3$": "<rootDir>/tests/setup/audioAssetStub.ts",
       "^@/(.*)$": "<rootDir>/src/$1"
     },
     "transform": {
