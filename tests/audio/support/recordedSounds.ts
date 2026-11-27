@@ -4,6 +4,8 @@ import type { AudioParam, BaseAudioContext } from 'react-native-audio-api';
 type SourceRecord = {
   isStarted: boolean;
   isStopped: boolean;
+  /** When the source was told to stop. */
+  stopTime: number | undefined;
 };
 
 export type RecordedSounds = {
@@ -63,12 +65,13 @@ type PlayableSource = {
 };
 
 const watchSource = (source: PlayableSource, recorded: RecordedSounds): void => {
-  const record: SourceRecord = { isStarted: false, isStopped: false };
+  const record: SourceRecord = { isStarted: false, isStopped: false, stopTime: undefined };
   recorded.sources.push(record);
   jest.spyOn(source, 'start').mockImplementation(() => {
     record.isStarted = true;
   });
-  jest.spyOn(source, 'stop').mockImplementation(() => {
+  jest.spyOn(source, 'stop').mockImplementation((when) => {
     record.isStopped = true;
+    record.stopTime = when;
   });
 };

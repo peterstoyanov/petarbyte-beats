@@ -85,3 +85,11 @@ export const pitchClassOf = (midi: MidiNote): PitchClass =>
 
 const octaveOf = (midi: MidiNote): number =>
   Math.floor(midi / SEMITONES_PER_OCTAVE) - OCTAVE_NUMBER_OFFSET;
+
+/** A4, the note orchestras tune to. */
+const A4: MidiNote = 69;
+const A4_HZ = 440;
+
+/** The pitch of a note in hertz, in equal temperament tuned to A4 = 440 Hz. */
+export const frequencyOf = (midi: MidiNote): number =>
+  A4_HZ * 2 ** ((midi - A4) / SEMITONES_PER_OCTAVE);

@@ -1,6 +1,7 @@
 import { describe, expect, it } from '@jest/globals';
 
 import {
+  frequencyOf,
   noteName,
   parseAccidental,
   parseNote,
@@ -83,5 +84,20 @@ describe('pitchClassOf', () => {
     expect(pitchClassOf(60)).toBe(0);
     expect(pitchClassOf(71)).toBe(11);
     expect(pitchClassOf(-1)).toBe(11);
+  });
+});
+
+describe('frequencyOf', () => {
+  it('tunes A4 to 440 Hz', () => {
+    expect(frequencyOf(69)).toBe(440);
+  });
+
+  it('doubles the pitch every octave', () => {
+    expect(frequencyOf(81)).toBe(880);
+    expect(frequencyOf(57)).toBe(220);
+  });
+
+  it('puts middle C at about 261.63 Hz', () => {
+    expect(frequencyOf(60)).toBeCloseTo(261.63, 2);
   });
 });
