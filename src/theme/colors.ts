@@ -31,6 +31,12 @@ export const colors = {
     android: Color.android.dynamic.primary,
     default: '#007aff',
   }),
+  /** Text on the accent color, such as the Play button's. */
+  onAccent: Platform.select<ColorValue>({
+    ios: '#ffffff',
+    android: Color.android.dynamic.onPrimary,
+    default: '#ffffff',
+  }),
   /** An empty step of the channel rack. */
   cell: Platform.select<ColorValue>({
     ios: Color.ios.tertiarySystemFill,
