@@ -6,6 +6,7 @@ export const typography = {
   callout: { fontSize: 16 },
   subhead: { fontSize: 15 },
   footnote: { fontSize: 13 },
+  caption: { fontSize: 11 },
 } as const satisfies Record<string, TextStyle>;
 
 export const fontWeight = {

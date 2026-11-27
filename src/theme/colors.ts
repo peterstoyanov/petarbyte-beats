@@ -31,6 +31,23 @@ export const colors = {
     android: Color.android.dynamic.primary,
     default: '#007aff',
   }),
+  /** An empty step of the channel rack. */
+  cell: Platform.select<ColorValue>({
+    ios: Color.ios.tertiarySystemFill,
+    android: Color.android.dynamic.surfaceContainerHighest,
+    default: '#e5e5ea',
+  }),
+  /** Every second beat's steps, a shade apart so the beats can be counted. */
+  cellAlternate: Platform.select<ColorValue>({
+    ios: Color.ios.secondarySystemFill,
+    android: Color.android.dynamic.surfaceContainerHigh,
+    default: '#d1d1d6',
+  }),
+  separator: Platform.select<ColorValue>({
+    ios: Color.ios.separator,
+    android: Color.android.dynamic.outlineVariant,
+    default: '#c6c6c8',
+  }),
   ripple: Platform.select<ColorValue>({
     android: Color.android.dynamic.onSurfaceVariant,
     default: 'transparent',
