@@ -86,10 +86,10 @@ The app mirrors the web studio. Where it differs, it is on purpose:
 
 The source code is licensed under the [MIT License](./LICENSE).
 
-The original songs and loops are not code. They are licensed under
-[CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/): free to share and adapt for
-non-commercial use with credit, and commercial use needs the author's written permission. Each
-folder with such content has a `LICENSE.md` that lists its files. The classical pieces are
+The original songs and loops, and the recipes of the sounds in `src/audio/sounds`, are not code.
+They are licensed under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/): free to
+share and adapt for non-commercial use with credit, and commercial use needs the author's written
+permission. Each folder with such content has a `LICENSE.md`. The classical pieces are
 public-domain compositions.
 
 ## Author
